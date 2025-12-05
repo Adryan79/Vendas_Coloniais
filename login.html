@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Administração</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para o formulário de login (mantidos iguais) */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-container h2 {
+            color: #7b3f00;
+            margin-bottom: 20px;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4b3832;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-container button:hover {
+            background-color: #a0522d;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Acesso Administrativo</h1>
+    </header>
+
+    <div class="login-container">
+        <h2>Entrar</h2>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Fazer Login</button>
+            <p id="login-message" style="color: red; margin-top: 15px; display: none;">Usuário ou senha incorretos.</p>
+        </form>
+    </div>
+
+</body>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const message = document.getElementById('login-message');
+
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "123456";
+
+        if (username === ADMIN_USER && password === ADMIN_PASS) {
+            // SUCESSO: SALVA TOKEN SIMULADO (Para checagem no admin.html)
+            localStorage.setItem('admin_logged_in', 'true');
+            window.location.href = 'admin.html';
+        } else {
+            // FALHA: Remove qualquer token antigo e mostra erro
+            localStorage.removeItem('admin_logged_in');
+            message.textContent = "Usuário ou senha incorretos.";
+            message.style.display = 'block';
+        }
+    });
+</script>
+</html>

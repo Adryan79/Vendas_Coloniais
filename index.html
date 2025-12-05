@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor da Colônia | Pedido Online</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>🍯🧂 Delícias da Dona Rose 🍪🍰🥧</h1>
+        <p>Produtos Frescos e Artesanais para sua Mesa!</p>
+        
+      <button id="admin-button" onclick="window.location.href='login.html'"> 
+        Acessar Plataforma Admin
+    </button>
+        </header>
+
+    <main>
+        <section id="products-list">
+            <h2>Selecione Seus Produtos</h2>
+            </section>
+
+        <section id="order-summary">
+            <h2>🛒 Resumo do Pedido</h2>
+            <div id="summary-items">Nenhum item selecionado.</div>
+            <div class="total-line">
+                <strong>Valor Total:</strong>
+                <strong id="total-price">R$ 0,00</strong>
+            </div>
+
+            <div class="user-validation">
+                <h3>Dados do Solicitante (Validação de Dados)</h3>
+                
+                <label for="client-name-select">Seu Nome:</label>
+                <select id="client-name-select" required>
+                    <option value="" disabled selected>--- Selecione seu Nome ---</option>
+                    </select>
+
+                <div class="sector-display">
+                    <label>Setor:</label>
+                    <span id="client-sector">N/A</span>
+                </div>
+            </div>
+
+            <button id="confirm-order" disabled>
+                Confirmar Solicitação
+            </button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sabor da Colônia</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

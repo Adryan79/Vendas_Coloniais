@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração de Pedidos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* BASE DE ESTILO */
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* HEADER RÚSTICO E MODERNO */
+        header {
+            background-color: #7b3f00; 
+            color: #ffffff;
+            padding: 30px 20px 20px 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        header p {
+            margin: 5px 0 0 0;
+            font-weight: 300;
+        }
+
+        /* --- BOTÕES FLUTUANTES NO TOPO (Ajuste Dinâmico) --- */
+        .top-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        #logout-button, #back-button {
+            background-color: #4b3832; /* Marrom Escuro */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; 
+            font-size: 0.95em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); 
+        }
+        #logout-button:hover, #back-button:hover {
+            background-color: #2e241f;
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+        #logout-button:active, #back-button:active {
+            transform: translateY(0); 
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset; 
+            background-color: #7b3f00; 
+        }
+
+        /* CONTAINER E TABELA PRINCIPAL */
+        .admin-container {
+            max-width: 1100px; 
+            margin: 20px auto 40px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .admin-container h2 {
+            color: #7b3f00;
+            border-bottom: 3px solid #d2b48c; 
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        /* FILTROS FIXOS E BOTÃO INCLUIR */
+        #filter-bar {
+            background-color: #fffaf0; 
+            padding: 15px 25px;
+            border-bottom: 1px solid #d2b48c;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            position: sticky; 
+            top: 0; 
+            z-index: 50; 
+            margin: -25px -25px 20px -25px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            flex-wrap: wrap; 
+        }
+        #filter-bar button {
+            margin-left: auto; 
+        }
+        /* Estilo do novo botão Incluir */
+        #quick-add-button {
+            background-color: #4b3832; 
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        #quick-add-button:hover {
+            background-color: #7b3f00;
+            transform: translateY(-1px);
+        }
+
+
+        #filter-bar label {
+            font-weight: 600;
+            color: #4b3832;
+            font-size: 0.9em;
+        }
+        #filter-bar select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            min-width: 120px;
+        }
+
+        /* TOTAIS (Status Summary) */
+        #status-summary {
+            margin-bottom: 20px; display: flex; justify-content: space-around; padding: 15px; 
+            background-color: #fffaf0; border: 1px solid #d2b48c; border-radius: 8px;
+        }
+
+        /* TABELA PRINCIPAL */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .order-table th, .order-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.95em;
+        }
+        .order-table th {
+            background-color: #f8f8f8; 
+            color: #4b3832;
+            font-weight: 700;
+        }
+        .order-table tbody tr:nth-child(even) {
+            background-color: #fdfdfd; 
+        }
+        .order-table tbody tr:hover {
+            background-color: #fff9e6;
+        }
+        
+        /* STATUS VISUAL */
+        .status-pago {
+            color: white;
+            font-weight: 700;
+            background-color: #4CAF50; 
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            display: inline-block;
+        }
+        .status-pendente {
+            color: white;
+            font-weight: 700;
+            background-color: #FF9800;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        /* BOTÕES DE AÇÃO NA TABELA (Ajuste Dinâmico) */
+        .action-cell {
+            white-space: nowrap; 
+        }
+
+        /* Botão de Status/Abrir Modal */
+        .status-button {
+            background-color: #a0522d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-right: 5px;
+        }
+        .status-button:hover {
+            background-color: #7b3f00;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .status-button:active {
+            background-color: #4b3832;
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+        }
+        
+        /* Botão de Excluir da Tabela */
+        .delete-button-table {
+            background-color: #e65252;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .delete-button-table:hover {
+            background-color: #c93b3b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .delete-button-table:active {
+            background-color: #7b0000;
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+        }
+
+        /* MODAL E EDIÇÃO DE ITEM */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content h2 {
+            color: #7b3f00;
+            border-bottom: 2px solid #d2b48c;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        /* BOTÃO MUDAR STATUS TOTAL */
+        .toggle-status-total {
+            background-color: #4b3832;
+            color: white;
+            border: none;
+            padding: 8px 12px; 
+            border-radius: 6px;
+            margin-left: 15px; 
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-status-total:hover {
+            background-color: #7b3f00;
+            transform: scale(1.02); 
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-status-total:active {
+            background-color: #2e241f;
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset;
+        }
+        
+        /* BOTÕES GERAIS DO MODAL (Adicionar e Salvar) */
+        .action-button {
+            background-color: #4CAF50; /* Verde para ação positiva */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+        .action-button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .action-button:active {
+            background-color: #3b8e3f;
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset;
+        }
+
+        /* Botão Excluir Pedido Completo (Modal) */
+        .action-button.delete-button {
+            background-color: #e65252;
+        }
+        .action-button.delete-button:hover {
+            background-color: #c93b3b;
+        }
+        .action-button.delete-button:active {
+            background-color: #7b0000;
+        }
+
+        /* ESTILOS DE EDIÇÃO DE ITEM REVISADOS */
+        #item-editor, #quick-add-item-selector { /* Mudança do ID aqui */
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f4ed;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap; 
+        }
+        #item-editor select, #quick-add-item-selector select,
+        #item-editor input[type="number"], #quick-add-item-selector input[type="number"],
+        #item-editor input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        /* Ajustes de layout para o novo modal de criação */
+        #quickAddModal select#quick-add-cliente { flex-grow: 1; min-width: 150px; }
+        #item-editor select, #quick-add-item-selector select { flex-grow: 1; min-width: 120px; }
+        #item-editor input[type="number"], #quick-add-item-selector input[type="number"] { width: 80px; flex-shrink: 0; }
+        #item-editor input[type="text"], #quick-add-item-selector input[type="text"] { width: 90px; flex-shrink: 0; 
+             background-color: #eee;
+             color: #4b3832;
+             font-weight: 600;
+             text-align: right; 
+        }
+        #item-editor button, #quick-add-item-selector button { flex-shrink: 0; }
+        .edit-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            #filter-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #filter-bar select {
+                width: 100%;
+                margin-top: 5px;
+            }
+            #filter-bar button {
+                margin-left: 0; 
+                width: 100%;
+            }
+            #status-summary {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Plataforma de Gerenciamento de Pedidos</h1>
+        <p>Controle de Status e Pagamentos</p>
+        <div class="top-buttons">
+            <button id="logout-button" onclick="logoutAdmin()">
+                Sair (Logout)
+            </button>
+            <button id="back-button" onclick="window.location.href='index.html'">
+                ← Voltar para a Loja
+            </button>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <h2>Painel de Pedidos Recentes</h2>
+        
+        <div id="filter-bar">
+            <label for="filter-status">Filtrar por Status:</label>
+            <select id="filter-status" onchange="loadOrders()">
+                <option value="TODOS">TODOS</option>
+                <option value="PAGO">PAGO</option>
+                <option value="PENDENTE">PENDENTE</option>
+            </select>
+            
+            <label for="filter-cliente">Filtrar por Cliente:</label>
+            <select id="filter-cliente" onchange="loadOrders()">
+                <option value="TODOS">TODOS</option>
+                </select>
+            
+            <button id="quick-add-button" onclick="openQuickAddModal()">
+                + Incluir Pedido Rápido
+            </button>
+        </div>
+        
+        <div id="status-summary">
+            <div>
+                <h4 style="margin: 0; color: #4CAF50;">TOTAL PAGO:</h4>
+                <p id="total-pago" style="font-size: 1.4em; font-weight: 700; color: #4CAF50; margin: 5px 0 0 0;">R$ 0,00</p>
+            </div>
+            <div>
+                <h4 style="margin: 0; color: #FF9800;">TOTAL PENDENTE:</h4>
+                <p id="total-pendente" style="font-size: 1.4em; font-weight: 700; color: #FF9800; margin: 5px 0 0 0;">R$ 0,00</p>
+            </div>
+        </div>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Setor</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                    <th>Status Pagamento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list">
+                </tbody>
+        </table>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Sabor da Colônia</p>
+    </footer>
+    
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('orderDetailsModal')">&times;</span>
+            <h2 id="modal-title">Detalhes do Pedido #</h2>
+
+            <p>Cliente: <strong id="modal-cliente"></strong> | Setor: <strong id="modal-setor"></strong> | Total: <strong id="modal-total"></strong></p>
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <p style="margin: 0;">Status Total: <strong id="modal-status-total"></strong></p> 
+               <button class="toggle-status-total" onclick="togglePaymentStatus(currentOrderId, true)">Mudar Status Total</button>
+            </div>
+
+            <h3>Itens do Pedido</h3>
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%">Produto (Sabor)</th>
+                        <th>Qtd</th>
+                        <th>Preço Unit.</th>
+                        <th>Subtotal</th>
+                        <th>Pago?</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="modal-items-list">
+                    </tbody>
+            </table>
+            
+            <hr style="margin-top: 25px;">
+            
+            <h4>Adicionar Novo Item</h4>
+            <div id="item-editor">
+                <select id="select-produto" onchange="loadFlavors('select-produto', 'select-sabor', 'new-item-price-display')">
+                    <option value="">Selecione o Produto</option>
+                </select>
+                <select id="select-sabor" disabled>
+                    <option value="">Selecione o Sabor</option>
+                </select>
+                
+                <input type="number" id="new-item-qty" placeholder="Qtd" min="1" value="1">
+                <input type="text" id="new-item-price-display" placeholder="R$ 0,00" disabled> 
+                <button class="action-button" onclick="addItemToOrder(currentOrderId)">Adicionar</button>
+            </div>
+
+            <div class="edit-controls">
+                <button class="action-button delete-button" onclick="deleteOrder(currentOrderId)">Excluir Pedido Completo</button>
+                <button class="action-button" onclick="saveOrderChanges(currentOrderId)">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="quickAddModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('quickAddModal')">&times;</span>
+            <h2>Criar Novo Pedido</h2>
+            
+            <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                
+                <div style="flex-grow: 1; min-width: 150px; display: flex; align-items: center; gap: 10px;">
+                    <label for="quick-add-cliente" style="font-weight: 600; color: #4b3832; flex-shrink: 0;">Cliente:</label>
+                    <select id="quick-add-cliente" onchange="updateQuickAddSector()" style="flex-grow: 1;">
+                        <option value="">Selecione o Cliente</option>
+                    </select>
+                </div>
+
+                <div style="flex-grow: 1; min-width: 150px; display: flex; align-items: center; gap: 10px;">
+                    <label for="quick-add-setor" style="font-weight: 600; color: #4b3832; flex-shrink: 0;">Setor:</label>
+                    <input type="text" id="quick-add-setor" value="N/A" disabled style="flex-grow: 1; background-color: #eee; color: #4b3832; font-weight: 600; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                
+            </div>
+            <hr style="width: 100%; border: none; border-top: 1px solid #d2b48c; margin: 20px 0;">
+
+            <h4>Adicionar Item</h4>
+            <div id="quick-add-item-selector">
+                <select id="quick-add-produto" onchange="loadFlavors('quick-add-produto', 'quick-add-sabor', 'quick-add-price-display')">
+                    <option value="">Selecione o Produto</option>
+                </select>
+                <select id="quick-add-sabor" disabled>
+                    <option value="">Selecione o Sabor</option>
+                </select>
+                
+                <input type="number" id="quick-add-qty" placeholder="Qtd" min="1" value="1" style="width: 70px;">
+                <input type="text" id="quick-add-price-display" placeholder="R$ 0,00" disabled style="width: 90px;"> 
+                
+                <button class="action-button" onclick="addItemToQuickAddList()">
+                    +
+                </button>
+            </div>
+            
+            <h4 style="margin-top: 25px;">Itens no Pedido: <span id="quick-add-current-total" style="color: #7b3f00;">R$ 0,00</span></h4>
+            
+            <table class="item-table" style="width: 100%; margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">Produto (Sabor)</th>
+                        <th>Qtd</th>
+                        <th>Subtotal</th>
+                        <th style="width: 5%">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="quick-add-items-list">
+                    </tbody>
+            </table>
+
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="action-button" style="background-color: #4CAF50;" onclick="createNewOrder()">
+                    Criar Pedido Completo
+                </button>
+            </div>
+
+            <p style="margin-top: 15px; font-size: 0.9em; color: #7b3f00;">
+                *Adicione um ou mais itens antes de criar o pedido.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // DADOS DO PRODUTO COPIADOS DE script.js
+        const PRODUTOS_DATA = [
+            {
+                'Produto': 'BOLACHA UN',
+                'Preco': 12.0,
+                'Variedades': [
+                    {'Sabor': 'MANTEIGA'},
+                    {'Sabor': 'FUBA'},
+                    {'Sabor': 'POLVILHO'},
+                    {'Sabor': 'NATA C/GLACÊ'},
+                    {'Sabor': 'COMUM'},
+                    {'Sabor': 'COMUM C/GLACE'},
+                ]
+            },
+            {
+                'Produto': 'QUEIJO KG',
+                'Preco': 40.0,
+                'Variedades': [
+                    {'Sabor': 'COMUM'},
+                ]
+            },
+            {
+                'Produto': 'QUEIJO KG',
+                'Preco': 45.0,
+                'Variedades': [
+                    {'Sabor': 'RECHADO'},
+                ]
+            },
+            {
+                'Produto': 'PÃO CASEIRO UN',
+                'Preco': 12.0,
+                'Variedades': [
+                    {'Sabor': 'Único'},
+                ]
+            },
+            {
+                'Produto': 'SALGADINHO UN',
+                'Preco': 12.0,
+                'Variedades': [
+                    {'Sabor': 'Único'},
+                ]
+            },
+            {
+                'Produto': 'CUCA S/RECHEIO UN',
+                'Preco': 12.0,
+                'Variedades': [
+                    {'Sabor': 'Único'},
+                ]
+            },
+            {
+                'Produto': 'DOCE DE LEITE UN',
+                'Preco': 20.0,
+                'Variedades': [
+                    {'Sabor': 'Único'},
+                ]
+            }
+        ];
+
+       // NOVO: SIMULAÇÃO DE DADOS DE CLIENTES (Vindo do "script.js" com o Setor)
+const CLIENTES_DATA = [
+    {nome: 'ADILIO SANTANA', setor: 'MARKETING'},
+    {nome: 'ADRYAN LUIZ SALDANHA CORDEIRO', setor: 'FINANCEIRO'},
+    {nome: 'ALAN GUARDIANO DE SOUZA', setor: 'PENSEAPP'},
+    {nome: 'ALEXANDRE MINGHINI', setor: 'BOARD'},
+    {nome: 'ALEXANDRO MARCELO SEVIERO', setor: 'BOARD'},
+    {nome: 'ALEXSANDER DE OLIVEIRA PONTES PIRES', setor: 'PENSEAPP'},
+    {nome: 'ANA KELI PEREIRA GIRARDI', setor: 'COMERCIAL'},
+    {nome: 'ANA PAULA RIGOTTE DA COSTA', setor: 'OPERACIONAL'},
+    {nome: 'ANNA CAROLINA TOMAZ DE OLIVEIRA', setor: 'COMERCIAL'},
+    {nome: 'ANNA LUIZA ANDRIANI', setor: 'PENSEAPP'},
+    {nome: 'BEATRIZ PAIXAO SOUZA PERON', setor: 'PENSEAPP'},
+    {nome: 'BRUNO AZEVEDO', setor: 'PENSEAPP'},
+    {nome: 'CLEUSSO DE OLIVEIRA ROMA', setor: 'COMERCIAL'},
+    {nome: 'CRISTIANE DE FREITAS SANCHES', setor: 'FINANCEIRO'},
+    {nome: 'DANIEL DA SILVA REVOREDO', setor: 'MPP'},
+    {nome: 'DANIELLE PALHANO', setor: 'GOVERNANÇA'},
+    {nome: 'DELMAR DALLA PALMA', setor: 'ANGELS'},
+    {nome: 'EDILAINE MARIA NEIS RICHETTI', setor: 'FINANCEIRO'},
+    {nome: 'EDUARDO REGINATO COLLA', setor: 'FINANCEIRO'},
+    {nome: 'ELIANE APARECIDA DA COSTA', setor: 'FINANCEIRO'},
+    {nome: 'ELOISA FRANCISCO SCHAEFER', setor: 'MARKETING'},
+    {nome: 'EMERSON DE JESUS SANTOS', setor: 'PENSEAPP'},
+    {nome: 'EMERSON MACHADO DE MAGALHAES', setor: 'TECNOLOGIA DA INFORMAÇÃO'},
+    {nome: 'FERNANDA LARISSA SOLIGO', setor: 'FINANCEIRO'},
+    {nome: 'FRANCIANY APARECIDA DANIEL MICOANSKI', setor: 'SUCESSO'},
+    {nome: 'GABRIELE PERTILE DE ANDRADE MEDINA', setor: 'FINANCEIRO'},
+    {nome: 'GABRIELI COGO RODRIGUES', setor: 'FINANCEIRO'},
+    {nome: 'GILBERTO DOS SANTOS NETO', setor: 'FINANCEIRO'},
+    {nome: 'GISELLE DA SILVA CORDEIRO', setor: 'PESSOAS'},
+    {nome: 'GUILHERME NICOLAO DA SILVA', setor: 'FINANCEIRO'},
+    {nome: 'INAE DE BORBA ROSA', setor: 'PENSEAPP'},
+    {nome: 'IRENE RIBEIRO DA ROCHA OLIVEIRA', setor: 'FINANCEIRO'},
+    {nome: 'ISABELLI DE LIMAS PADILHA', setor: 'SUCESSO'},
+    {nome: 'JANAENA FAEZA PEREIRA', setor: 'OPERACIONAL'},
+    {nome: 'JANAINA MICHELI SILVESTRE MONTANGER', setor: 'FINANCEIRO'},
+    {nome: 'JESSICA GONCALVES DE MORAIS', setor: 'FINANCEIRO'},
+    {nome: 'JOYCE KAROLINE SILVERIO DOS SANTOS', setor: 'FINANCEIRO'},
+    {nome: 'JULYAN ROSDREY ROSS', setor: 'PENSEAPP'},
+    {nome: 'KALL ANY GOUVEA CORTEZE', setor: 'BOARD'},
+    {nome: 'KARINE MOREIRA COMARELLA', setor: 'SUCESSO'},
+    {nome: 'KATIA REGINA EUFRASIO', setor: 'MPP'},
+    {nome: 'LENISE APARECIDA STOCCO DAMIRCO', setor: 'COMERCIAL'},
+    {nome: 'LIZANDRA PEREIRA ZANATTA', setor: 'BOARD'},
+    {nome: 'LUAN DA SILVA SANTANA', setor: 'PENSEAPP'},
+    {nome: 'LUANA DE BATZ SILVEIRA', setor: 'FINANCEIRO'},
+    {nome: 'MARCELA BARBOSA SILVA', setor: 'CONTABILIDADE'},
+    {nome: 'MARESSA ROBERTA MARSON', setor: 'CONTABILIDADE'},
+    {nome: 'MARIA EDUARDA PACENTCHUK RODRIGUES', setor: 'SUCESSO'},
+    {nome: 'MARIANA CAMPAGNOLI BARBOSA', setor: 'PENSEAPP'},
+    {nome: 'MARIO MARCELINO FILHO', setor: 'BOARD'},
+    {nome: 'MATHEUS FELIPE VIEIRA SANTIAGO', setor: 'PENSEAPP'},
+    {nome: 'MATHEUS VIEIRA ROCHA', setor: 'MARKETING'},
+    {nome: 'NYCKOLAS PARRO SEIXAS', setor: 'PENSEAPP'},
+    {nome: 'PATRICK JUSCELINO MONTEIRO TIEMECHI', setor: 'TECNOLOGIA DA INFORMAÇÃO'},
+    {nome: 'RAFAELA DE OLIVEIRA JESUS', setor: 'OPERACIONAL'},
+    {nome: 'RAFAELLA WANDSCHEER RAIMUNDO', setor: 'GOVERNANÇA'},
+    {nome: 'RICARDO GAMBINI GREGO', setor: 'BOARD'},
+    {nome: 'RODOLFO ABDALA', setor: 'MANAUS'},
+    {nome: 'RUI ROSSI DOS SANTOS', setor: 'BOARD'},
+    {nome: 'SERGIO ZANOLLO FIORDELIS', setor: 'OPERACIONAL'},
+    {nome: 'TANIA GRANDO BORTOLON', setor: 'COMERCIAL'},
+    {nome: 'TATIANE DA SILVA', setor: 'FINANCEIRO'},
+    {nome: 'TATIANE DE OLIVEIRA TRESPACH', setor: 'MARKETING'},
+    {nome: 'THAIS FERNANDA MACIEL BONINI', setor: 'GOVERNANÇA'},
+    {nome: 'THAMARA TIERLING ESCHER', setor: 'MPP'},
+    {nome: 'THOMAZ DE OLIVEIRA NEVES', setor: 'MARKETING'},
+    {nome: 'VITOR HARTMANN SILVA', setor: 'OPERACIONAL'},
+    {nome: 'WELISON COSTA DA SILVA', setor: 'OPERACIONAL'},
+    {nome: 'WILLIAM HENRIQUE DOS REIS', setor: 'FINANCEIRO'}
+];
+        
+        let currentOrderId = null; 
+        
+        // NOVO ARRAY GLOBAL PARA ITENS EM CRIAÇÃO
+        let tempNewOrderItems = []; 
+        
+        // --- FUNÇÕES DE UTENSÍLIOS ---
+        const formatPrice = (price) => {
+            return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+        
+        // 1. VERIFICAÇÃO DE LOGIN
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            alert('Acesso negado. Por favor, faça login.');
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
+            populateProductSelect('select-produto'); 
+            populateProductSelect('quick-add-produto'); 
+            populateClientSelect('filter-cliente'); 
+            populateClientSelect('quick-add-cliente'); 
+        });
+        
+        function logoutAdmin() {
+            localStorage.removeItem('admin_logged_in');
+            window.location.href = 'login.html';
+        }
+
+        function determineTotalStatus(items) {
+            const allPaid = items.every(item => item.statusPagamento === true);
+            return allPaid ? 'PAGO' : 'PENDENTE';
+        }
+        
+        // --- FUNÇÕES DE POPULAMENTO AJUSTADAS ---
+        
+        function populateProductSelect(selectId) {
+            const select = document.getElementById(selectId);
+            // Limpa as opções existentes (exceto a primeira)
+            while(select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            PRODUTOS_DATA.forEach((item, index) => {
+                const option = document.createElement('option');
+                option.value = index; 
+                option.textContent = `${item.Produto} (${formatPrice(item.Preco)})`;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateClientSelect(selectId) {
+            const select = document.getElementById(selectId);
+            // Limpa as opções existentes (exceto a primeira, se for 'TODOS' ou 'Selecione')
+            while(select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // AGORA POPULA COM BASE NO CLIENTES_DATA (para validação)
+            // Se o select for o filtro ('TODOS' é a primeira opção), os dados de clientes podem vir do CLIENTES_DATA
+            // ou do localStorage (para clientes já existentes em pedidos), mantive a versão que usa CLIENTES_DATA para validação
+            
+            CLIENTES_DATA.sort((a, b) => a.nome.localeCompare(b.nome));
+
+            CLIENTES_DATA.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.nome.toUpperCase();
+                option.textContent = client.nome.toUpperCase();
+                select.appendChild(option);
+            });
+        }
+        
+        // NOVA FUNÇÃO: ATUALIZA O SETOR DO CLIENTE NO MODAL
+        function updateQuickAddSector() {
+            const clienteSelect = document.getElementById('quick-add-cliente');
+            const setorInput = document.getElementById('quick-add-setor');
+            const nomeCliente = clienteSelect.value;
+            
+            if (nomeCliente) {
+                // Busca o setor no CLIENTES_DATA
+                const cliente = CLIENTES_DATA.find(c => c.nome.toUpperCase() === nomeCliente);
+                setorInput.value = cliente ? cliente.setor : 'Setor Não Encontrado';
+            } else {
+                setorInput.value = 'N/A';
+            }
+        }
+
+
+        function loadFlavors(productSelectId, flavorSelectId, priceDisplayId) {
+            const productSelect = document.getElementById(productSelectId);
+            const flavorSelect = document.getElementById(flavorSelectId);
+            const priceDisplay = document.getElementById(priceDisplayId);
+            
+            flavorSelect.innerHTML = '<option value="">Selecione o Sabor</option>';
+            priceDisplay.value = 'R$ 0,00';
+            flavorSelect.disabled = true;
+
+            const index = productSelect.value;
+            if (index === "") return;
+
+            const produto = PRODUTOS_DATA[index];
+            
+            priceDisplay.value = formatPrice(produto.Preco);
+            
+            produto.Variedades.forEach(v => {
+                const option = document.createElement('option');
+                option.value = v.Sabor;
+                option.textContent = v.Sabor;
+                flavorSelect.appendChild(option);
+            });
+            
+            if (produto.Variedades.length > 1 || produto.Variedades[0].Sabor !== 'Único') {
+                 flavorSelect.disabled = false;
+            }
+
+            if (produto.Variedades.length === 1 && produto.Variedades[0].Sabor === 'Único') {
+                flavorSelect.value = 'Único';
+                flavorSelect.disabled = true;
+            }
+        }
+        
+        // --- FUNÇÕES DE CONTROLE DE PEDIDO ---
+
+        function loadOrders() {
+            const ordersListBody = document.getElementById('orders-list');
+            ordersListBody.innerHTML = '';
+            
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            orders.sort((a, b) => b.id - a.id);
+            
+            // Obter valores de filtro
+            const filterStatus = document.getElementById('filter-status').value;
+            const filterClient = document.getElementById('filter-cliente').value;
+
+            // Variáveis para somar os totais
+            let totalPagoGeral = 0;
+            let totalPendenteGeral = 0;
+
+            // Aplicar filtros
+            const filteredOrders = orders.filter(order => {
+                const statusTotal = determineTotalStatus(order.itens);
+                
+                const matchesStatus = filterStatus === 'TODOS' || statusTotal === filterStatus;
+                const matchesClient = filterClient === 'TODOS' || (order.cliente && order.cliente.toUpperCase() === filterClient.toUpperCase());
+                
+                return matchesStatus && matchesClient;
+            });
+
+            if (filteredOrders.length === 0) {
+                ordersListBody.innerHTML = '<tr><td colspan="7">Nenhum pedido encontrado com os filtros aplicados.</td></tr>';
+            }
+
+            filteredOrders.forEach(order => {
+                const row = ordersListBody.insertRow();
+                const statusTotal = determineTotalStatus(order.itens); 
+                const statusClass = statusTotal === 'PAGO' ? 'status-pago' : 'status-pendente';
+                const totalFormatado = order.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                // Usando o setor vindo dos dados do pedido
+                const setorDisplay = order.setor ? order.setor : 'N/A';
+
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.cliente}</td>
+                    <td>${setorDisplay}</td>
+                    <td>${order.data.split(',')[0]}</td>
+                    <td>${totalFormatado}</td>
+                    <td><span class="${statusClass}" id="status_total_${order.id}">${statusTotal}</span></td>
+                    <td class="action-cell">
+                        <button class="status-button" onclick="openOrderDetailsModal(${order.id})">
+                            Status
+                        </button>
+                        <button class="delete-button-table" onclick="deleteOrder(${order.id})">
+                            Excluir
+                        </button>
+                    </td>
+                `;
+                
+                // --- CÁLCULO PARA O RESUMO GERAL ---
+                let valorPagoNestePedido = 0;
+                let valorPendenteNestePedido = 0;
+                
+                order.itens.forEach(item => {
+                    const subtotal = item.quantidade * item.preco;
+                    if (item.statusPagamento === true) {
+                        valorPagoNestePedido += subtotal;
+                    } else {
+                        valorPendenteNestePedido += subtotal;
+                    }
+                });
+
+                totalPagoGeral += valorPagoNestePedido;
+                totalPendenteGeral += valorPendenteNestePedido;
+                
+            });
+            
+            // --- ATUALIZAÇÃO DOS TOTAIS NA TELA ---
+            document.getElementById('total-pago').textContent = formatPrice(totalPagoGeral);
+            document.getElementById('total-pendente').textContent = formatPrice(totalPendenteGeral);
+        }
+        
+        // --- FUNÇÕES DE MODAL ---
+        
+        function openModal(modalId) {
+             document.getElementById(modalId).style.display = 'block';
+        }
+        
+        function closeModal(modalId) {
+             document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // FUNÇÃO AJUSTADA: INICIALIZA O CAMPO SETOR
+        function openQuickAddModal() {
+            // Limpa a lista temporária e os campos antes de abrir
+            tempNewOrderItems = []; 
+            document.getElementById('quick-add-cliente').value = "";
+            document.getElementById('quick-add-produto').value = "";
+            document.getElementById('quick-add-qty').value = "1";
+            document.getElementById('quick-add-price-display').value = "R$ 0,00";
+            
+            populateClientSelect('quick-add-cliente');
+            loadFlavors('quick-add-produto', 'quick-add-sabor', 'quick-add-price-display');
+            loadQuickAddItems(); // Renderiza a lista vazia
+            
+            // Inicializa o setor como N/A
+            document.getElementById('quick-add-setor').value = 'N/A';
+            
+            openModal('quickAddModal');
+        }
+
+        function openOrderDetailsModal(orderId) {
+            currentOrderId = orderId;
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const order = orders.find(o => o.id === orderId);
+            
+            if (!order) return;
+
+            const newTotal = order.itens.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
+            order.total = newTotal;
+            localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+
+            const totalFormatado = formatPrice(order.total);
+            const statusTotal = determineTotalStatus(order.itens);
+
+            document.getElementById('modal-title').textContent = `Detalhes do Pedido #${order.id}`;
+            document.getElementById('modal-cliente').textContent = order.cliente;
+            document.getElementById('modal-setor').textContent = order.setor ? order.setor : 'N/A'; // Mantido por compatibilidade
+            document.getElementById('modal-total').textContent = totalFormatado;
+            document.getElementById('modal-status-total').textContent = statusTotal;
+            document.getElementById('modal-status-total').className = statusTotal === 'PAGO' ? 'status-pago' : 'status-pendente';
+
+            const itemsList = document.getElementById('modal-items-list');
+            itemsList.innerHTML = '';
+
+            order.itens.forEach((item, itemIndex) => {
+                const row = itemsList.insertRow();
+                const subtotal = item.quantidade * item.preco;
+                const subtotalFormatado = formatPrice(subtotal);
+                const precoFormatado = formatPrice(item.preco);
+                
+                const itemStatusText = item.statusPagamento ? 'PAGO' : 'PENDENTE';
+                const itemStatusClass = item.statusPagamento ? 'status-pago' : 'status-pendente';
+
+                row.innerHTML = `
+                    <td>${item.produto} (${item.sabor})</td>
+                    <td>${item.quantidade}</td>
+                    <td>${precoFormatado}</td>
+                    <td>${subtotalFormatado}</td>
+                    <td><span class="${itemStatusClass} item-status" onclick="toggleItemStatus(${order.id}, ${itemIndex})">
+                        ${itemStatusText}
+                    </span></td>
+                    <td>
+                        <button class="action-button delete-button" style="padding: 5px 8px; font-size: 0.8em;" onclick="deleteItemFromOrder(${order.id}, ${itemIndex})">
+                            Excluir
+                        </button>
+                    </td>
+                `;
+            });
+
+            document.getElementById('select-produto').value = "";
+            loadFlavors('select-produto', 'select-sabor', 'new-item-price-display'); 
+            document.getElementById('new-item-qty').value = '1';
+
+            openModal('orderDetailsModal');
+        }
+
+        // --- FUNÇÕES PARA O NOVO MODAL DE CRIAÇÃO ---
+
+        function loadQuickAddItems() {
+            const itemsListBody = document.getElementById('quick-add-items-list');
+            itemsListBody.innerHTML = '';
+            let currentTotal = 0;
+            
+            if (tempNewOrderItems.length === 0) {
+                 itemsListBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #777;">Nenhum item adicionado ainda.</td></tr>';
+            }
+
+            tempNewOrderItems.forEach((item, index) => {
+                const row = itemsListBody.insertRow();
+                const subtotal = item.quantidade * item.preco;
+                currentTotal += subtotal;
+                const subtotalFormatado = formatPrice(subtotal);
+
+                row.innerHTML = `
+                    <td>${item.produto} (${item.sabor})</td>
+                    <td>${item.quantidade}</td>
+                    <td>${subtotalFormatado}</td>
+                    <td>
+                        <button class="action-button delete-button" style="padding: 5px 8px; font-size: 0.8em;" onclick="deleteQuickAddItem(${index})">
+                            X
+                        </button>
+                    </td>
+                `;
+            });
+
+            document.getElementById('quick-add-current-total').textContent = formatPrice(currentTotal);
+        }
+        
+        function addItemToQuickAddList() {
+            const produtoSelect = document.getElementById('quick-add-produto');
+            const saborSelect = document.getElementById('quick-add-sabor');
+            const qtyInput = document.getElementById('quick-add-qty');
+
+            const produtoIndex = produtoSelect.value;
+            const sabor = saborSelect.value;
+            const quantidade = parseInt(qtyInput.value);
+
+            if (produtoIndex === "" || sabor === "" || quantidade <= 0) {
+                alert('Por favor, selecione um Produto, um Sabor e uma Quantidade válida (Qtd > 0).');
+                return;
+            }
+            
+            const produtoData = PRODUTOS_DATA[produtoIndex];
+            const preco = parseFloat(produtoData.Preco);
+
+            const newItem = {
+                produto: produtoData.Produto,
+                sabor: sabor,
+                quantidade: quantidade,
+                preco: preco,
+                statusPagamento: false 
+            };
+            
+            tempNewOrderItems.push(newItem);
+
+            // Limpa os campos após adicionar e recarrega a lista
+            produtoSelect.value = "";
+            loadFlavors('quick-add-produto', 'quick-add-sabor', 'quick-add-price-display'); 
+            qtyInput.value = '1';
+
+            loadQuickAddItems();
+        }
+        
+        function deleteQuickAddItem(itemIndex) {
+            if (!confirm(`Tem certeza que deseja remover este item da lista?`)) return;
+            
+            tempNewOrderItems.splice(itemIndex, 1);
+            loadQuickAddItems();
+        }
+        
+        // FUNÇÃO AJUSTADA: PEGA O SETOR DO CAMPO NÃO EDITÁVEL E VALIDA OS DADOS
+        function createNewOrder() {
+            const clienteSelect = document.getElementById('quick-add-cliente');
+            const setorInput = document.getElementById('quick-add-setor');
+            
+            const nomeCliente = clienteSelect.value; 
+            const nomeSetor = setorInput.value; 
+
+            // 1. VALIDAÇÃO GERAL (Cliente e Setor)
+            if (!nomeCliente || nomeSetor === 'N/A' || nomeSetor === 'Setor Não Encontrado') {
+                alert('Por favor, selecione um cliente válido. O Setor deve ser definido automaticamente.');
+                return;
+            }
+            if (tempNewOrderItems.length === 0) {
+                alert('Adicione pelo menos um item ao pedido antes de criar.');
+                return;
+            }
+
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            
+            // Encontra o próximo ID disponível
+            const nextId = orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1;
+
+            const totalFinal = tempNewOrderItems.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
+            
+            const newOrder = {
+                id: nextId,
+                cliente: nomeCliente,
+                setor: nomeSetor, // Agora usa o setor vindo da validação
+                data: new Date().toLocaleString('pt-BR'),
+                itens: tempNewOrderItems,
+                total: totalFinal 
+            };
+            
+            orders.push(newOrder);
+            localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+
+            alert(`Pedido #${nextId} para ${nomeCliente} criado com sucesso! Total: ${formatPrice(totalFinal)}`);
+            
+            closeModal('quickAddModal');
+            loadOrders();
+            populateClientSelect('filter-cliente'); 
+        }
+
+        // --- FUNÇÕES DE EDIÇÃO EXISTENTES ---
+        
+        function toggleItemStatus(orderId, itemIndex) {
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+
+            if (orderIndex !== -1) {
+                const item = orders[orderIndex].itens[itemIndex];
+                item.statusPagamento = !item.statusPagamento;
+
+                localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+                openOrderDetailsModal(orderId); 
+                loadOrders(); 
+            }
+        }
+        
+        function togglePaymentStatus(orderId, isTotalToggle = false) {
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+
+            if (orderIndex !== -1 && isTotalToggle) {
+                const order = orders[orderIndex];
+                
+                const currentStatus = determineTotalStatus(order.itens);
+                const newStatusPaid = (currentStatus === 'PENDENTE');
+
+                order.itens.forEach(item => {
+                    item.statusPagamento = newStatusPaid;
+                });
+
+                localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+                if (currentOrderId) openOrderDetailsModal(currentOrderId);
+                loadOrders(); 
+            }
+        }
+
+        function deleteOrder(orderId) {
+            if (!confirm(`Tem certeza que deseja EXCLUIR o pedido #${orderId} COMPLETAMENTE? Esta ação é irreversível!`)) return;
+
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const updatedOrders = orders.filter(order => order.id !== orderId);
+            
+            localStorage.setItem('pedidos_dona_rose', JSON.stringify(updatedOrders));
+            
+            closeModal('orderDetailsModal');
+            loadOrders();
+            alert(`Pedido #${orderId} excluído com sucesso.`);
+        }
+        
+        function deleteItemFromOrder(orderId, itemIndex) {
+            if (!confirm(`Tem certeza que deseja excluir este item do pedido #${orderId}? O total será recalculado ao salvar.`)) return;
+            
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+
+            if (orderIndex !== -1) {
+                orders[orderIndex].itens.splice(itemIndex, 1);
+                
+                localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+                
+                alert('Item excluído. Clique em "Salvar Alterações" para atualizar o total do pedido.');
+                openOrderDetailsModal(orderId); 
+            }
+        }
+        
+        function addItemToOrder(orderId) {
+            const productSelect = document.getElementById('select-produto');
+            const flavorSelect = document.getElementById('select-sabor');
+            const qtyInput = document.getElementById('new-item-qty');
+
+            const produtoIndex = productSelect.value;
+            const sabor = flavorSelect.value;
+            const quantidade = parseInt(qtyInput.value);
+
+            if (produtoIndex === "" || sabor === "" || quantidade <= 0) {
+                alert('Por favor, selecione um Produto, um Sabor e uma Quantidade válida (Qtd > 0).');
+                return;
+            }
+            
+            const produtoData = PRODUTOS_DATA[produtoIndex];
+            const preco = parseFloat(produtoData.Preco);
+
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const newItem = {
+                    produto: produtoData.Produto,
+                    sabor: sabor,
+                    quantidade: quantidade,
+                    preco: preco,
+                    statusPagamento: false 
+                };
+                
+                orders[orderIndex].itens.push(newItem);
+                localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+
+                // Limpa os campos após adicionar
+                productSelect.value = "";
+                loadFlavors('select-produto', 'select-sabor', 'new-item-price-display'); 
+                qtyInput.value = '1';
+
+                alert('Item adicionado. Clique em "Salvar Alterações" para recalcular o total.');
+                openOrderDetailsModal(orderId);
+            }
+        }
+        
+        function saveOrderChanges(orderId) {
+            const orders = JSON.parse(localStorage.getItem('pedidos_dona_rose')) || [];
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                
+                const newTotal = order.itens.reduce((sum, item) => sum + (item.quantidade * item.preco), 0);
+                orders[orderIndex].total = newTotal;
+                
+                localStorage.setItem('pedidos_dona_rose', JSON.stringify(orders));
+                
+                alert(`Alterações salvas! Novo Total: ${formatPrice(newTotal)}`);
+                
+                loadOrders(); 
+                openOrderDetailsModal(orderId);
+            }
+        }
+
+        // Função para fechar os modais ao clicar fora
+        window.onclick = function(event) {
+            const modalDetails = document.getElementById('orderDetailsModal');
+            const modalQuickAdd = document.getElementById('quickAddModal');
+            
+            if (event.target == modalDetails) {
+                closeModal('orderDetailsModal');
+            }
+            if (event.target == modalQuickAdd) {
+                closeModal('quickAddModal');
+            }
+        }
+    </script>
+</body>
+</html>
