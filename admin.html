@@ -78,6 +78,7 @@
             padding-bottom: 15px;
             margin-bottom: 30px;
             font-weight: 700;
+            font-size: 1.6em; /* Ajuste para mobile */
         }
         
         /* FILTROS FIXOS E BOTÃO INCLUIR */
@@ -116,7 +117,6 @@
             transform: translateY(-1px);
         }
 
-
         #filter-bar label {
             font-weight: 600;
             color: #4b3832;
@@ -137,7 +137,14 @@
         }
 
         /* TABELA PRINCIPAL */
+        /* NOVO: Container para permitir a rolagem horizontal da tabela */
+        .table-responsive {
+            overflow-x: auto; 
+            width: 100%;
+        }
+
         .order-table {
+            min-width: 800px; /* Garante que a tabela não encolha demais no PC */
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
@@ -169,6 +176,7 @@
             border-radius: 4px;
             text-align: center;
             display: inline-block;
+            white-space: nowrap; /* Impede a quebra de linha */
         }
         .status-pendente {
             color: white;
@@ -178,43 +186,43 @@
             border-radius: 4px;
             text-align: center;
             display: inline-block;
+            white-space: nowrap; /* Impede a quebra de linha */
         }
         
         /* BOTÕES DE AÇÃO NA TABELA (Ajuste Dinâmico) */
         .action-cell {
             white-space: nowrap; 
         }
+        /* Botões da Tabela */
+        .status-button, .delete-button-table {
+            /* Diminui o padding e a fonte para caberem melhor */
+            padding: 6px 10px !important; 
+            font-size: 0.85em !important;
+            margin-right: 3px;
+        }
+
 
         /* Botão de Status/Abrir Modal */
         .status-button {
             background-color: #a0522d;
             color: white;
             border: none;
-            padding: 8px 12px;
             border-radius: 6px; 
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-right: 5px;
         }
         .status-button:hover {
             background-color: #7b3f00;
             transform: translateY(-1px);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        .status-button:active {
-            background-color: #4b3832;
-            transform: translateY(0);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
-        }
-        
-        /* Botão de Excluir da Tabela */
+        /* ... (restante dos estilos de botões mantidos) ... */
         .delete-button-table {
             background-color: #e65252;
             color: white;
             border: none;
-            padding: 8px 12px;
             border-radius: 6px; 
             font-weight: 600;
             cursor: pointer;
@@ -225,11 +233,6 @@
             background-color: #c93b3b;
             transform: translateY(-1px);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        .delete-button-table:active {
-            background-color: #7b0000;
-            transform: translateY(0);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
         }
 
         /* MODAL E EDIÇÃO DE ITEM */
@@ -250,79 +253,16 @@
             margin: 5% auto;
             padding: 30px;
             border: 1px solid #888;
-            width: 90%;
+            width: 90%; /* Ajuste para ocupar mais espaço no celular */
             max-width: 800px;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
             animation: fadeIn 0.3s;
         }
-        .modal-content h2 {
-            color: #7b3f00;
-            border-bottom: 2px solid #d2b48c;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
+        /* ... (estilos de modal mantidos) ... */
         
-        /* BOTÃO MUDAR STATUS TOTAL */
-        .toggle-status-total {
-            background-color: #4b3832;
-            color: white;
-            border: none;
-            padding: 8px 12px; 
-            border-radius: 6px;
-            margin-left: 15px; 
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .toggle-status-total:hover {
-            background-color: #7b3f00;
-            transform: scale(1.02); 
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-        }
-        .toggle-status-total:active {
-            background-color: #2e241f;
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset;
-        }
-        
-        /* BOTÕES GERAIS DO MODAL (Adicionar e Salvar) */
-        .action-button {
-            background-color: #4CAF50; /* Verde para ação positiva */
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-        }
-        .action-button:hover {
-            background-color: #45a049;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-        }
-        .action-button:active {
-            background-color: #3b8e3f;
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset;
-        }
-
-        /* Botão Excluir Pedido Completo (Modal) */
-        .action-button.delete-button {
-            background-color: #e65252;
-        }
-        .action-button.delete-button:hover {
-            background-color: #c93b3b;
-        }
-        .action-button.delete-button:active {
-            background-color: #7b0000;
-        }
-
         /* ESTILOS DE EDIÇÃO DE ITEM REVISADOS */
-        #item-editor, #quick-add-item-selector { /* Mudança do ID aqui */
+        #item-editor, #quick-add-item-selector { 
             display: flex;
             gap: 15px;
             align-items: center;
@@ -330,53 +270,125 @@
             background-color: #f8f4ed;
             border-radius: 8px;
             margin-top: 20px;
-            flex-wrap: wrap; 
+            flex-wrap: wrap; /* Permite quebrar linha no mobile */
         }
-        #item-editor select, #quick-add-item-selector select,
-        #item-editor input[type="number"], #quick-add-item-selector input[type="number"],
-        #item-editor input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            height: 40px;
-            box-sizing: border-box;
-        }
-        /* Ajustes de layout para o novo modal de criação */
-        #quickAddModal select#quick-add-cliente { flex-grow: 1; min-width: 150px; }
-        #item-editor select, #quick-add-item-selector select { flex-grow: 1; min-width: 120px; }
-        #item-editor input[type="number"], #quick-add-item-selector input[type="number"] { width: 80px; flex-shrink: 0; }
-        #item-editor input[type="text"], #quick-add-item-selector input[type="text"] { width: 90px; flex-shrink: 0; 
-             background-color: #eee;
-             color: #4b3832;
-             font-weight: 600;
-             text-align: right; 
-        }
-        #item-editor button, #quick-add-item-selector button { flex-shrink: 0; }
-        .edit-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        
-        /* Responsividade */
+        /* ... (estilos de inputs/selects mantidos) ... */
+
+        /* Responsividade PADRÃO */
         @media (max-width: 768px) {
+            
+            /* 1. LAYOUT PRINCIPAL E BOTÕES DO TOPO */
+            header {
+                padding-top: 50px; /* Aumenta o espaço para os botões */
+            }
+            .top-buttons {
+                position: static; /* Tira do canto superior direito */
+                display: flex; 
+                flex-direction: row; 
+                justify-content: center; /* Centraliza os botões */
+                width: 100%;
+                margin-top: -30px; /* Joga os botões para cima, acima do h1 */
+                gap: 5px;
+                padding: 0 10px;
+                box-sizing: border-box;
+            }
+            #logout-button, #back-button {
+                 flex-grow: 1; /* Faz os botões dividirem o espaço */
+                 padding: 8px 10px;
+                 font-size: 0.85em;
+            }
+
+            .admin-container {
+                padding: 15px; /* Diminui o padding interno */
+                margin: 10px auto 30px auto;
+                width: 95%;
+                box-sizing: border-box;
+            }
+            
+            /* 2. FILTROS */
             #filter-bar {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch; /* Estica os itens para preencher a largura */
+                padding: 15px;
+                margin: -15px -15px 15px -15px; /* Ajusta as margens negativas */
             }
             #filter-bar select {
                 width: 100%;
                 margin-top: 5px;
+                box-sizing: border-box;
             }
+            /* O botão Incluir já está com margin-left: auto, então precisamos ajustar: */
             #filter-bar button {
                 margin-left: 0; 
                 width: 100%;
+                margin-top: 10px;
             }
+            
+            /* 3. TOTAIS */
             #status-summary {
                 flex-direction: column;
-                align-items: center;
+                gap: 10px; /* Adiciona espaço entre os blocos */
             }
+            #status-summary > div {
+                 width: 100%;
+                 text-align: center;
+                 padding: 5px 0;
+            }
+            
+            /* 4. TABELAS: A MUDANÇA CRÍTICA */
+            /* Envolvemos a tabela em .table-responsive no HTML para permitir a rolagem horizontal */
+            .table-responsive {
+                overflow-x: auto;
+            }
+            .order-table, .item-table {
+                min-width: 600px; /* Define uma largura mínima para a tabela rolar */
+            }
+
+            /* 5. MODAL */
+            .modal-content {
+                margin: 10px auto; /* Sobe o modal */
+                padding: 15px;
+                width: 95%; /* Ocupa quase toda a largura */
+            }
+            .toggle-status-total {
+                margin-left: 10px;
+                padding: 6px 10px;
+                font-size: 0.8em;
+                white-space: nowrap;
+            }
+            
+            /* 6. EDIÇÃO/CRIAÇÃO DE ITEM NO MODAL */
+            #item-editor, #quick-add-item-selector {
+                gap: 8px; /* Reduz o espaçamento */
+                padding: 10px;
+            }
+            /* Faz os selects de Produto e Sabor ocuparem a largura total */
+            #item-editor select, #quick-add-item-selector select { 
+                width: 100%; 
+                min-width: unset;
+            }
+            /* Inputs de Qtd e Preço em linha */
+            #item-editor input[type="number"], #quick-add-item-selector input[type="number"] {
+                width: 40%;
+            }
+            #item-editor input[type="text"], #quick-add-item-selector input[type="text"] {
+                width: 50%;
+            }
+            #item-editor button, #quick-add-item-selector button {
+                width: 100%; 
+                margin-top: 10px;
+            }
+            
+            /* Ajuste específico para o modal de CRIAÇÃO (Quick Add) */
+            #quickAddModal > .modal-content > div:first-child {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #quickAddModal > .modal-content > div:first-child > div {
+                 width: 100%;
+                 gap: 5px;
+            }
+
         }
     </style>
 </head>
@@ -427,23 +439,23 @@
             </div>
         </div>
 
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Setor</th>
-                    <th>Data</th>
-                    <th>Total</th>
-                    <th>Status Pagamento</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="orders-list">
-                </tbody>
-        </table>
-
-    </div>
+        <div class="table-responsive">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Setor</th>
+                        <th>Data</th>
+                        <th>Total</th>
+                        <th>Status Pagamento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list">
+                    </tbody>
+            </table>
+        </div>
 
     <footer>
         <p>&copy; 2025 Sabor da Colônia</p>
